@@ -82,13 +82,16 @@ class Field {
             return startLoc;
         }
 
-        // Shuffle the field
+        // Shuffle the field randomly
         const shuffle = (arr) => {
             arr.sort(() => Math.random() - 0.5);
             return arr;
         }
 
-        // Sanitse recursively
+        // Sanitise field start location (*), hat and hole locations
+        // so they don't overlap (start in same indexes) and return 
+        // an array ready to be spliced into smaller equally sized
+        // arrays determined by width, to create a 2D maze.
         const sanitiseStart = (area) => {
             let hat = generateHatLoc();
             let start = generateStartLoc();
@@ -101,12 +104,13 @@ class Field {
                 arr.push(hat);
                 arr.push(start);
             }
-            // Generate hole location
+            // Generate hole location which does not overlap with hat or start
             const generateRandomHoles = (min, max) => {
                 let num = Math.floor(Math.random() * (max - min + 1)) + min;
                 return (num === hat || num === start) ? generateRandomHoles(min, max) : num;
             }
-
+            // Generate the field with appropriate holes (as a percentage) of the total
+            // positions available in the field.
             for (let i = 0; i < area; i++) {
                 if (i === arr[0]) {
                     finalField.push(hatChar);
@@ -123,6 +127,10 @@ class Field {
 
         field = sanitiseStart(area);
         field = shuffle(field);
+
+        // Check random field has a valid path to the hat amongst
+        // the obstacles
+
 
         // Splice the field arr into appropriate broken down arrays
         // by width of the field
