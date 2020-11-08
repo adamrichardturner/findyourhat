@@ -6,13 +6,15 @@ let keypress = require('keypress');
 
 const hat = '^';
 const hole = 'O';
-const fieldCharacter = '░';
-const pathCharacter = '*';
+const fieldChar = '░';
+const pathChar = '*';
 
 
 class Field {
-    constructor(field) {
+    constructor(field, x, y) {
         this._field = field;
+        this._x = x;
+        this._y = y;
     }
 
     direction() {
@@ -46,15 +48,28 @@ class Field {
         print();
     }
 
-    get loci() {
+    get startLoci() {
+        // Returns index of start position of the field
+        // flattened as an array.
         let field = this._field;
-        for (let i = 0; i <= field.length; i++) {
-            if (field[i] === '*') {
-                console.log(i);
-            } else {
-                console.log(field[i]);
-            }
+        let d = field.length;
+        let i = field.flat(d).indexOf('*');
+        return i;
+    }
+
+    set nextLoci(direction) {
+
+    }
+
+    static generateField(width, height, percent) {
+        let area = width * height;
+        let percentage = (area / 100) * percent;
+        let field = [];
+        for (let i = 0; i <= area.length; i++) {
+
         }
+        console.log(area);
+        return field;
     }
 }
 
@@ -64,4 +79,5 @@ const myField = new Field([
     ['░', '^', '░'],
 ]);
 
-console.log(myField.loci);
+const newField = Field.generateField(2, 2, 5);
+console.log(newField);
