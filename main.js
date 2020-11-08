@@ -4,7 +4,7 @@ const prompt = require('prompt-sync')({
 
 let keypress = require('keypress');
 
-const hat = '^';
+const hatChar = '^';
 const hole = 'O';
 const fieldChar = '░';
 const pathChar = '*';
@@ -62,13 +62,74 @@ class Field {
     }
 
     static generateField(width, height, percent) {
-        let area = width * height;
-        let percentage = (area / 100) * percent;
-        let field = [];
-        for (let i = 0; i <= area.length; i++) {
+        // Assemble area with width and height
+        // Assemble percent of area to be covered in 
+        // field chars
+        const area = width * height;
+        const startPercent = (2 / area) * 100;
+        const percentage = (area / 100) * percent;
 
+        let field = []; // The final field generated
+
+        // Generate an index for a hat locus
+        const generateHatLoc = () => {
+            const hatLoc = Math.floor(Math.random(0) * area);
+            return hatLoc;
         }
-        console.log(area);
+        // Generate index for a start locus
+        const generateStartLoc = () => {
+            let startLoc = Math.floor(Math.random(0) * area);
+            return startLoc;
+        }
+
+        // Shuffle the field
+        const shuffle = (arr) => {
+            arr.sort(() => Math.random() - 0.5);
+            return arr;
+        }
+
+        // Sanitse recursively
+        const sanitiseStart = (area) => {
+            let hat = generateHatLoc();
+            let start = generateStartLoc();
+            let arr = [];
+            let finalField = [];
+            if (hat === start) {
+                arr.push(Math.floor(Math.random() * area));
+                arr.push(Math.floor(Math.random() * area));
+            } else {
+                arr.push(hat);
+                arr.push(start);
+            }
+            // Generate hole location
+            const generateRandomHoles = (min, max) => {
+                let num = Math.floor(Math.random() * (max - min + 1)) + min;
+                return (num === hat || num === start) ? generateRandomHoles(min, max) : num;
+            }
+
+            for (let i = 0; i < area; i++) {
+                if (i === arr[0]) {
+                    finalField.push(hatChar);
+                } else if (i === arr[1]) {
+                    finalField.push(pathChar);
+                } else if (finalField.length <= percentage) {
+                    finalField.push(hole);
+                } else {
+                    finalField.push(fieldChar);
+                }
+            }
+            return finalField;
+        }
+
+        field = sanitiseStart(area);
+        field = shuffle(field);
+
+        // Splice the field arr into appropriate broken down arrays
+        // by width of the field
+        for (let i = 0; i < field.length; i++) {
+            field.push(field.splice(0, width));
+        }
+
         return field;
     }
 }
@@ -79,5 +140,6 @@ const myField = new Field([
     ['░', '^', '░'],
 ]);
 
-const newField = Field.generateField(2, 2, 5);
+const newField = Field.generateField(5, 5, 50);
+
 console.log(newField);
