@@ -128,14 +128,18 @@ class Field {
 
         field = sanitiseStart(area);
 
+        field = shuffle(field);
+
         // Splice the field arr into appropriate broken down arrays
         // by width of the field. Now we have a 'valid' field but we 
         // need to confirm paths are accessible to the goal using 
         // path finding algo before returning it from the static
         // method
+
         for (let i = 0; i < field.length; i++) {
             field.push(field.splice(0, width));
         }
+
         // Finds start location in 2D array
         const findStartLocation = (fields) => {
             let start = [];
@@ -165,8 +169,6 @@ class Field {
                 path: [],
                 status: 'Start'
             };
-
-            console.log(location);
 
             // Initialize the queue with the start location already inside
             let queue = [location];
@@ -208,7 +210,6 @@ class Field {
                     queue.push(newLocation);
                 }
             }
-
             // No valid path found
             return false;
 
@@ -218,6 +219,7 @@ class Field {
         // (a location is "valid" if it is on the grid, is not an "obstacle",
         // and has not yet been visited by our algorithm)
         // Returns "Valid", "Invalid", "Blocked", or "Goal"
+
         const locationStatus = (location, grid) => {
             let gridSize = grid.length;
             let dft = location.distanceFromTop;
@@ -227,7 +229,6 @@ class Field {
                 location.distanceFromLeft >= gridSize ||
                 location.distanceFromTop < 0 ||
                 location.distanceFromTop >= gridSize) {
-
                 // location is not on the grid--return false
                 return 'Invalid';
             } else if (grid[dft][dfl] === hatChar) {
@@ -244,6 +245,7 @@ class Field {
 
         // Explores the grid from the given location in the given
         // direction
+
         const exploreInDirection = (currentLocation, direction, grid) => {
             let newPath = currentLocation.path.slice();
             newPath.push(direction);
@@ -267,9 +269,10 @@ class Field {
                 path: newPath,
                 status: 'Unknown'
             };
+
             newLocation.status = locationStatus(newLocation, grid);
 
-            // If this new location is valid, mark it as 'Visited'
+            //If this new location is valid, mark it as 'Visited'
             if (newLocation.status === 'Valid') {
                 grid[newLocation.distanceFromTop][newLocation.distanceFromLeft] = visited;
             }
@@ -281,8 +284,12 @@ class Field {
 
         let endField = findShortestPath(startLocus, field);
 
-        console.log(endField);
-        return field;
+        if (endField === false) {
+            endField = this.generateField(width, height, percent);
+            return endField;
+        } else {
+            return endField;
+        }
     }
 }
 
@@ -292,6 +299,6 @@ const myField = new Field([
     ['░', '^', '░'],
 ]);
 
-const newField = Field.generateField(4, 4, 50);
+const newField = Field.generateField(4, 10, 50);
 
 console.log(newField);
