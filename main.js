@@ -18,10 +18,6 @@ const visited = 'x';
 class Field {
     constructor(field) {
         this._field = field;
-        let startLoci = this.startLoci;
-        console.log("start Loci is " + startLoci);
-        this._locationX = startLoci[0][0];
-        this._locationY = startLoci[0][1];
     }
 
     playGame() {
@@ -51,25 +47,24 @@ class Field {
                     console.log('Enter W A D or S.');
                     break;
             }
-            if (x < 0 || x > field[0].length) {
-                console.log("x is : " + x, "y is " + y);
+            if (x < 0 || x >= field[0].length) {
                 console.log('Off the grid!');
                 play = false;
                 break;
+            } else if (y < 0 || y >= field.length) {
+                console.log('Off the grid');
+                play = false;
+                break;
             } else if (field[y][x] === hatChar) {
-                console.log("x is : " + x, "y is " + y);
                 console.log('You found your hat!!!');
                 play = false;
                 break;
             } else if (field[y][x] === hole) {
-                console.log("x is : " + x, "y is " + y);
                 console.log('Oops you fell down a hole!');
                 play = false;
                 break;
             } else {
-                console.log('At the bottom x is: ' + x, "y is " + y);
                 field[y][x] = pathChar;
-                answer = prompt('>');
             }
 
         }
@@ -138,14 +133,6 @@ class Field {
                 this.promptUser();
                 break;
         }
-    }
-
-    isHat() {
-        return this._field[this._locationY][this._locationX] === hatChar;
-    }
-
-    isHole() {
-        return this._field[this._locationY][this._locationX] === hole;
     }
 
     static generateField(width, height, percent) {
@@ -386,13 +373,12 @@ class Field {
     }
 }
 
-const myField = new Field([
-    ['*', '░', 'O'],
-    ['░', 'O', '░'],
-    ['░', '^', '░'],
-]);
-
-const newField = Field.generateField(4, 16, 20);
+// Define the width and height of the grid and percentage of obstacles
+// Mazes are automatically defined with random allocation of field characters
+// and holes (O). A path finding algorithm is run on every random generation 
+// and instance of the field generated to check it can be solved before 
+// being returned to the user.  
+const newField = Field.generateField(4, 16, 25);
 
 const newGame = new Field(newField);
 
