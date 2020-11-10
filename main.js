@@ -1,3 +1,5 @@
+const _ = require("lodash")
+
 const prompt = require('prompt-sync')({
     sigint: true
 });
@@ -40,12 +42,13 @@ class Field {
     }
 
     print() {
-        this._field.forEach(n => {
-            console.log(n)
-        });
+        const fieldString = this._field.join('\n');
+        console.log(fieldString);
     }
 
     playGame() {
+        let y = 0;
+        let x = 0;
         print();
     }
 
@@ -129,7 +132,9 @@ class Field {
         field = sanitiseStart(area);
 
         field = shuffle(field);
-
+        field = shuffle(field);
+        field = shuffle(field);
+        field = shuffle(field);
         // Splice the field arr into appropriate broken down arrays
         // by width of the field. Now we have a 'valid' field but we 
         // need to confirm paths are accessible to the goal using 
@@ -221,7 +226,7 @@ class Field {
         // Returns "Valid", "Invalid", "Blocked", or "Goal"
 
         const locationStatus = (location, grid) => {
-            let gridSize = grid.length;
+            let gridSize = width;
             let dft = location.distanceFromTop;
             let dfl = location.distanceFromLeft;
 
@@ -282,13 +287,18 @@ class Field {
 
         let startLocus = findStartLocation(field);
 
+        // Deep clone of field (we don't want to return the maze modified by the path finding algo)
+
+        const maze = _.cloneDeep(field);
+
+        // If endField is true, we return maze (the umodified version of the maze), else we return
+        // a recursive call to generateField until we get a valid field
         let endField = findShortestPath(startLocus, field);
 
-        if (endField === false) {
-            endField = this.generateField(width, height, percent);
-            return endField;
+        if (endField) {
+            return maze;
         } else {
-            return endField;
+            return this.generateField(width, height, percent);
         }
     }
 }
@@ -299,6 +309,8 @@ const myField = new Field([
     ['░', '^', '░'],
 ]);
 
-const newField = Field.generateField(4, 10, 50);
+const newField = Field.generateField(8, 20, 80);
 
-console.log(newField);
+const newGame = new Field(newField, 0, 5);
+
+newGame.print();
