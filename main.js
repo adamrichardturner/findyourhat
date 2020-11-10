@@ -11,7 +11,7 @@ const {
 const hatChar = '^';
 const hole = 'O';
 const fieldChar = '░';
-const pathChar = '*';
+const pathChar = ("*");
 const visited = 'x';
 
 
@@ -76,7 +76,7 @@ class Field {
             console.log(n)
         });
 
-        // Print as a joined string
+        //Print as a joined string
         // const fieldString = this._field.join(' \n');
         // console.log(fieldString);
     }
@@ -89,7 +89,7 @@ class Field {
         for (let i = 0; i < fields.length; i++) {
             let field = fields[i];
             for (let j = 0; j < field.length; j++) {
-                if (field[j] === "*") {
+                if (field[j] === pathChar) {
                     start.push([j]);
                     start.push([i]);
                 }
@@ -104,7 +104,7 @@ class Field {
         for (let i = 0; i < fields.length; i++) {
             let field = fields[i];
             for (let j = 0; j < field.length; j++) {
-                if (field[j] === "^") {
+                if (field[j] === hatChar) {
                     start.push([j]);
                     start.push([i]);
                 }
@@ -221,7 +221,7 @@ class Field {
             for (let i = 0; i < fields.length; i++) {
                 let field = fields[i];
                 for (let j = 0; j < field.length; j++) {
-                    if (field[j] === "*") {
+                    if (field[j] === pathChar) {
                         start.push([i]);
                         start.push([j]);
                     }
@@ -378,7 +378,7 @@ class Field {
 // and holes (O). A path finding algorithm is run on every random generation 
 // and instance of the field generated to check it can be solved before 
 // being returned to the user.  
-const newField = Field.generateField(4, 16, 25);
+const newField = Field.generateField(4, 8, 25);
 
 const newGame = new Field(newField);
 

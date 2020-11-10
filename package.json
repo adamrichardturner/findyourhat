@@ -6,7 +6,6 @@
   "author": "Codecademy",
   "license": "ISC",
   "dependencies": {
-    "keypress": "^0.2.1",
     "lodash": "^4.17.20",
     "prompt-sync": "^4.1.7"
   }
