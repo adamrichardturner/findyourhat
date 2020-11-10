@@ -4,7 +4,9 @@ const prompt = require('prompt-sync')({
     sigint: true
 });
 
-let keypress = require('keypress');
+const {
+    startsWith
+} = require("lodash");
 
 const hatChar = '^';
 const hole = 'O';
@@ -14,55 +16,136 @@ const visited = 'x';
 
 
 class Field {
-    constructor(field, x, y) {
+    constructor(field) {
         this._field = field;
-        this._x = x;
-        this._y = y;
-    }
-
-    direction() {
-        // make `process.stdin` begin emitting "keypress" events
-        keypress(process.stdin);
-        let direction = '';
-        // listen for the "keypress" event
-        process.stdin.on('keypress', function (ch, key) {
-            if (key && key.ctrl && key.name == 'c') {
-                process.stdin.pause();
-            } else if (key.name == 'up' || key.name == 'down' || key.name == 'left' || key.name == 'right') {
-                direction = key;
-            } else {
-                console.log('Use the arrow keys to navigate.');
-            }
-        });
-
-        process.stdin.setRawMode(true);
-        process.stdin.resume();
-
-        return direction;
-    }
-
-    print() {
-        const fieldString = this._field.join('\n');
-        console.log(fieldString);
+        let startLoci = this.startLoci;
+        console.log("start Loci is " + startLoci);
+        this._locationX = startLoci[0][0];
+        this._locationY = startLoci[0][1];
     }
 
     playGame() {
-        let y = 0;
-        let x = 0;
-        print();
+        let play = true;
+        let field = this._field;
+        let startLoci = this.startLoci;
+        let x = startLoci[0][0];
+        let y = startLoci[1][0];
+        console.log('x at start is: ' + x, 'y at start is ' + y);
+        while (play) {
+            this.print();
+            const answer = prompt('Which way do you want to go? ').toUpperCase();
+            switch (answer) {
+                case 'W':
+                    y -= 1;
+                    break;
+                case 'D':
+                    x += 1;
+                    break;
+                case 'S':
+                    y += 1;
+                    break;
+                case 'A':
+                    x -= 1;
+                    break;
+                default:
+                    console.log('Enter W A D or S.');
+                    break;
+            }
+            if (x < 0 || x > field[0].length) {
+                console.log("x is : " + x, "y is " + y);
+                console.log('Off the grid!');
+                play = false;
+                break;
+            } else if (field[y][x] === hatChar) {
+                console.log("x is : " + x, "y is " + y);
+                console.log('You found your hat!!!');
+                play = false;
+                break;
+            } else if (field[y][x] === hole) {
+                console.log("x is : " + x, "y is " + y);
+                console.log('Oops you fell down a hole!');
+                play = false;
+                break;
+            } else {
+                console.log('At the bottom x is: ' + x, "y is " + y);
+                field[y][x] = pathChar;
+                answer = prompt('>');
+            }
+
+        }
+    }
+
+    print() {
+        // Print as an array
+        this._field.forEach(n => {
+            console.log(n)
+        });
+
+        // Print as a joined string
+        // const fieldString = this._field.join(' \n');
+        // console.log(fieldString);
     }
 
     get startLoci() {
-        // Returns index of start position of the field
-        // flattened as an array.
-        let field = this._field;
-        let d = field.length;
-        let i = field.flat(d).indexOf('*');
-        return i;
+        // Find the start loci of the * and store it in 
+        // an array as yx
+        let start = [];
+        let fields = this._field;
+        for (let i = 0; i < fields.length; i++) {
+            let field = fields[i];
+            for (let j = 0; j < field.length; j++) {
+                if (field[j] === "*") {
+                    start.push([j]);
+                    start.push([i]);
+                }
+            }
+        }
+        return start;
     }
 
-    set nextLoci(direction) {
+    get hatLoci() {
+        let start = [];
+        let fields = this._field;
+        for (let i = 0; i < fields.length; i++) {
+            let field = fields[i];
+            for (let j = 0; j < field.length; j++) {
+                if (field[j] === "^") {
+                    start.push([j]);
+                    start.push([i]);
+                }
+            }
+        }
+        return start;
+    }
 
+    promptUser() {
+        const answer = prompt('Which way do you want to go? ').toUpperCase();
+        switch (answer) {
+            case 'W':
+                this._locationY -= 1;
+                break;
+            case 'D':
+                this._locationX += 1;
+                break;
+            case 'S':
+                this._locationY += 1;
+                break;
+            case 'A':
+                this._locationX -= 1;
+                break;
+            default:
+                console.log('Enter W A D or S.');
+                this.promptUser();
+                break;
+        }
+    }
+
+    isHat() {
+        return this._field[this._locationY][this._locationX] === hatChar;
+    }
+
+    isHole() {
+        return this._field[this._locationY][this._locationX] === hole;
     }
 
     static generateField(width, height, percent) {
@@ -309,8 +392,8 @@ const myField = new Field([
     ['░', '^', '░'],
 ]);
 
-const newField = Field.generateField(8, 20, 80);
+const newField = Field.generateField(4, 16, 20);
 
-const newGame = new Field(newField, 0, 5);
+const newGame = new Field(newField);
 
-newGame.print();
+newGame.playGame();
