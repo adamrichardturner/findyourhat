@@ -113,28 +113,6 @@ class Field {
         return start;
     }
 
-    promptUser() {
-        const answer = prompt('Which way do you want to go? ').toUpperCase();
-        switch (answer) {
-            case 'W':
-                this._locationY -= 1;
-                break;
-            case 'D':
-                this._locationX += 1;
-                break;
-            case 'S':
-                this._locationY += 1;
-                break;
-            case 'A':
-                this._locationX -= 1;
-                break;
-            default:
-                console.log('Enter W A D or S.');
-                this.promptUser();
-                break;
-        }
-    }
-
     static generateField(width, height, percent) {
         // Assemble area with width and height
         // Assemble percent of area to be covered in 
