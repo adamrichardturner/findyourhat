@@ -11,7 +11,7 @@ const {
 const hatChar = '^';
 const hole = 'O';
 const fieldChar = '░';
-const pathChar = ("*");
+const pathChar = '*';
 const visited = 'x';
 
 
